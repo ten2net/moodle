@@ -1438,6 +1438,7 @@ class table_sql extends flexible_table{
         if (!$this->is_downloading()) {
             if ($this->countsql === NULL){
                 $this->countsql = 'SELECT COUNT(1) FROM '.$this->sql->from.' WHERE '.$this->sql->where;
+                $this->countparams = $this->sql->params;
             }
             if ($useinitialsbar && !$this->is_downloading()) {
                 $totalinitials = $DB->count_records_sql($this->countsql, $this->countparams);
