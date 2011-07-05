@@ -219,7 +219,7 @@ function cron_run() {
 
         if (!empty($CFG->deleteincompleteusers)) {
             $cuttime = $timenow - ($CFG->deleteincompleteusers * 3600);
-            $rs = $DB->get_recordset_sql ("SELECT id, username
+            $rs = $DB->get_recordset_sql ("SELECT id, username, email, auth
                                              FROM {user}
                                             WHERE confirmed = 1 AND lastaccess > 0
                                                   AND lastaccess < ? AND deleted = 0
@@ -595,3 +595,4 @@ function cron_bc_hack_plugin_functions($plugintype, $plugins) {
 
     return $plugins;
 }
+
