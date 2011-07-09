@@ -1166,7 +1166,7 @@ class global_navigation extends navigation_node {
         }
 
         // If the user is not logged in modify the navigation structure as detailed
-        // in {@link http://docs.moodle.org/en/Development:Navigation_2.0_structure}
+        // in {@link http://docs.moodle.org/dev/Navigation_2.0_structure}
         if (!isloggedin()) {
             $activities = clone($this->rootnodes['site']->children);
             $this->rootnodes['site']->remove();
@@ -1626,7 +1626,9 @@ class global_navigation extends navigation_node {
             } else {
                 // This is the site so add a users node to the root branch
                 $usersnode = $this->rootnodes['users'];
-                $usersnode->action = new moodle_url('/user/index.php', array('id'=>$course->id));
+                if (has_capability('moodle/course:viewparticipants', $coursecontext)) {
+                    $usersnode->action = new moodle_url('/user/index.php', array('id'=>$course->id));
+                }
                 $userviewurl = new moodle_url('/user/profile.php', $baseargs);
             }
             if (!$usersnode) {
