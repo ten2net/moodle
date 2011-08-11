@@ -79,6 +79,7 @@ html, body {background-color:#C8C9C7;}
 #adminsettings fieldset {border:1px solid #C8C9C7;background-color:#E3E3E3;}
 #adminsettings fieldset .generalbox {margin:1em 0.5em;border-color:#C8C9C7;}
 #adminsettings .form-buttons {margin-left:13em;}
+#page-admin-roles-override .capcurrent {background-color:#FFFFFF;border: 1px solid #CECECE;}
 
 .form-item {width:100%;margin:1em 1em 2em 1em ;}
 .form-item .form-label {width:12.5em;text-align:right;float:left;margin-right:0.5em;}
@@ -154,6 +155,7 @@ html, body {background-color:#C8C9C7;}
 .forumpost .content .commands {font-size:0.9em;clear:both;padding-top:0.5em;text-align:right;}
 .forumpost .content .link {font-size:0.9em;}
 .forumpost .content .footer {font-size:0.9em;padding-top:0.5em;text-align:right;}
+.forumpost.unread .content {border:2px solid #0046C7;} /** inside border of unread posts in nested format in */
 
 /** Calendar **/
 .block.block_calendar_month td,
