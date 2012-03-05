@@ -91,6 +91,9 @@ class core_course_renderer extends plugin_renderer_base {
      * @return string
      */
     protected function course_category_tree_category(stdClass $category, $depth=1) {
+			//修改的地放引入全局变量 @李明奇  2012.3.2
+		global $CFG, $USER, $DB, $OUTPUT;
+		//end  以上删除并不影响程序
         $content = '';
         $hassubcategories = (count($category->categories)>0);
         $hascourses = (count($category->courses)>0);
@@ -131,6 +134,84 @@ class core_course_renderer extends plugin_renderer_base {
                 $classes[] = ($coursecount%2)?'odd':'even';
                 $content .= html_writer::start_tag('div', array('class'=>join(' ', $classes)));
                 $content .= html_writer::link(new moodle_url('/course/view.php', array('id'=>$course->id)), format_string($course->fullname), array('class'=>$linkclass));
+				  //修改开始  以下为添加的  @李明奇  2012.3.2
+                  
+				  
+				  
+			$course = $DB->get_record('course', array('id'=>$course->id));
+			$context = get_context_instance(CONTEXT_COURSE, $course->id);
+				   if (!empty($CFG->coursecontact)) {
+        $managerroles = explode(',', $CFG->coursecontact);
+        $namesarray = array();
+        if (isset($course->managers)) {    //最外围if 开始
+            if (count($course->managers)) {
+                $rusers = $course->managers;
+                $canviewfullnames = has_capability('moodle/site:viewfullnames', $context);
+
+                 /// Rename some of the role names if needed
+                if (isset($context)) {
+                    $aliasnames = $DB->get_records('role_names', array('contextid'=>$context->id), '', 'roleid,contextid,name');
+                }
+
+                // keep a note of users displayed to eliminate duplicates
+                $usersshown = array();
+				
+                foreach ($rusers as $ra) {
+
+                    // if we've already displayed user don't again
+                    if (in_array($ra->user->id,$usersshown)) {
+                        continue;
+                    }
+                    $usersshown[] = $ra->user->id;
+
+                    $fullname = fullname($ra->user, $canviewfullnames);
+
+                    if (isset($aliasnames[$ra->roleid])) {
+                        $ra->rolename = $aliasnames[$ra->roleid]->name;
+                    }
+
+                    $namesarray[] = format_string($ra->rolename).': '.
+                                    html_writer::link(new moodle_url('/user/view.php', array('id'=>$ra->user->id, 'course'=>SITEID)), $fullname);
+                }
+            }
+        } else {
+            $rusers = get_role_users($managerroles, $context,
+                                     true, '', 'r.sortorder ASC, u.lastname ASC');
+            if (is_array($rusers) && count($rusers)) {
+                $canviewfullnames = has_capability('moodle/site:viewfullnames', $context);
+
+                /// Rename some of the role names if needed  当在此课程中重命名角色称为的时候
+                if (isset($context)) {
+                    $aliasnames = $DB->get_records('role_names', array('contextid'=>$context->id), '', 'roleid,contextid,name');
+                }
+                
+                foreach ($rusers as $teacher) {
+                    $fullname = fullname($teacher, $canviewfullnames);
+
+                    /// Apply role names
+                    if (isset($aliasnames[$teacher->roleid])) {
+                        $teacher->rolename = $aliasnames[$teacher->roleid]->name;
+                    }
+                       
+                    $namesarray[] = format_string($teacher->rolename).': '.
+                                    html_writer::link(new moodle_url('/user/view.php', array('id'=>$teacher->id, 'course'=>SITEID)), $fullname);
+                }
+            }
+        }
+                 //课程负责人教师的调用
+        if (!empty($namesarray)) {
+		  
+            //$content.=html_writer::start_tag('ul', array('class'=>'teachers'));
+            foreach ($namesarray as $name) {
+                //$content.= html_writer::tag('span', $name);
+				 $content.= $name;
+            }
+           //$content.= html_writer::end_tag('ul');
+        }
+    }  //最外围if 结束
+	
+		
+   //修改结束  添加结束  以上删除并不影响只是调用本课程教师
                 $content .= html_writer::start_tag('div', array('class'=>'course_info clearfix'));
 
                 // print enrol info
