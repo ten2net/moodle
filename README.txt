@@ -1,4 +1,4 @@
-QUICK INSTALL
+快速安装指南
 =============
 
 For the impatient, here is a basic outline of the
